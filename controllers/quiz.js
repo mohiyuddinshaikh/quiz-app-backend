@@ -3,6 +3,7 @@ const ObjectId = mongoose.Types.ObjectId;
 
 /** Models */
 const Quiz = require("../models/quiz");
+const QuizQuestions = require("../models/quizQuestions");
 
 module.exports = {
   /**
@@ -11,7 +12,14 @@ module.exports = {
    */
   async getAllQuiz(req, res) {
     try {
-      const quizzes = await Quiz.find({});
+      const quizzes = await Quiz.find({}).lean();
+      let quizzesToSend = [...quizzes];
+      for (let oneQuiz of quizzesToSend) {
+        const numberOfQuizQuestions = await QuizQuestions.find({
+          quizId: oneQuiz._id,
+        }).countDocuments();
+        oneQuiz.numberOfQuestions = numberOfQuizQuestions;
+      }
       return res.status(200).send({ message: "Fetched successfully", quizzes });
     } catch (error) {
       console.log("error :>> ", error);
