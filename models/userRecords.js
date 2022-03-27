@@ -3,7 +3,7 @@ const Schema = mongoose.Schema;
 
 const userRecordsSchema = new Schema(
   {
-    quizId: { type: Number, required: true },
+    quizId: { type: Schema.Types.ObjectId, ref: "Quiz" },
     name: { type: String, required: true },
     score: { type: Number, required: true },
   },

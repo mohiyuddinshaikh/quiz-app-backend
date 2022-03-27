@@ -1,9 +1,8 @@
 const mongoose = require("mongoose");
-const ObjectId = mongoose.Types.ObjectId;
+const { MAX_NUMBER_OF_QUESTIONS } = require("../constants");
 
 /** Models */
 const Quiz = require("../models/quiz");
-const QuizQuestions = require("../models/quizQuestions");
 
 module.exports = {
   /**
@@ -15,10 +14,7 @@ module.exports = {
       const quizzes = await Quiz.find({}).lean();
       let quizzesToSend = [...quizzes];
       for (let oneQuiz of quizzesToSend) {
-        const numberOfQuizQuestions = await QuizQuestions.find({
-          quizId: oneQuiz._id,
-        }).countDocuments();
-        oneQuiz.numberOfQuestions = numberOfQuizQuestions;
+        oneQuiz.numberOfQuestions = MAX_NUMBER_OF_QUESTIONS;
       }
       return res.status(200).send({ message: "Fetched successfully", quizzes });
     } catch (error) {

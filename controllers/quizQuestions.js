@@ -6,6 +6,7 @@ const ObjectId = mongoose.Types.ObjectId;
 /** Models */
 const Quiz = require("../models/quiz");
 const QuizQuestions = require("../models/quizQuestions");
+const { MAX_NUMBER_OF_QUESTIONS } = require("../constants");
 
 module.exports = {
   /**
@@ -25,9 +26,11 @@ module.exports = {
         { quizId },
         "-correctAnswer -incorrectAnswers"
       );
-      return res
-        .status(200)
-        .send({ message: "Fetched successfully", data: questions });
+      const shuffledQuestions = shuffleArrayItems(questions);
+      return res.status(200).send({
+        message: "Fetched successfully",
+        data: shuffledQuestions.slice(0, MAX_NUMBER_OF_QUESTIONS),
+      });
     } catch (error) {
       return res.status(500).send({ message: "Something went wrong.", error });
     }
@@ -50,7 +53,6 @@ module.exports = {
       const scienceAndNatureEasyQuizId = 3;
 
       const response = await axios.get(scienceAndNatureEasy20);
-      console.log("response", response);
       const quiz = await Quiz.findOne({ quizId: scienceAndNatureEasyQuizId });
 
       let arr = [];
@@ -69,8 +71,6 @@ module.exports = {
           const quizQues = new QuizQuestions(obj);
           await quizQues.save();
         }
-        // console.log("arr :>> ", arr);
-        // console.log("arr.count() :>> ", arr.length);
       }
       return res.status(200).send({ data: arr });
     } catch (error) {
@@ -79,3 +79,16 @@ module.exports = {
     }
   },
 };
+
+function shuffleArrayItems(array) {
+  for (var i = array.length - 1; i > 0; i--) {
+    // Generate random number
+    var j = Math.floor(Math.random() * (i + 1));
+
+    var temp = array[i];
+    array[i] = array[j];
+    array[j] = temp;
+  }
+
+  return array;
+}
