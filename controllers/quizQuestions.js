@@ -65,7 +65,10 @@ module.exports = {
             correctAnswer: item.correct_answer,
             incorrectAnswers: item.incorrect_answers,
             subject: item.category,
-            options: [item.correct_answer, ...item.incorrect_answers],
+            options: shuffleArrayItems([
+              item.correct_answer,
+              ...item.incorrect_answers,
+            ]),
           };
           arr.push(obj);
           const quizQues = new QuizQuestions(obj);
@@ -75,6 +78,24 @@ module.exports = {
       return res.status(200).send({ data: arr });
     } catch (error) {
       console.log("error", error);
+      return res.status(500).send({ message: "Something went wrong.", error });
+    }
+  },
+
+  /**
+   * @api {post} /quiz-questions/shuffle-existing-quiz-options
+   * @apiDescription api to shuffle existing quiz options
+   */
+  async shuffleExistingQuizOptions(req, res) {
+    try {
+      const quizQuestions = await QuizQuestions.find({});
+      for (const item of quizQuestions) {
+        let tempOptions = shuffleArrayItems(item.options);
+        item.options = [...tempOptions];
+        await item.save();
+      }
+      return res.status(200).send({ data: quizQuestions });
+    } catch (error) {
       return res.status(500).send({ message: "Something went wrong.", error });
     }
   },

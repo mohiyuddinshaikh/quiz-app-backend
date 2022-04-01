@@ -7,5 +7,9 @@ router.post(
   "/bulk-create-questions",
   QuizQuestionsController.bulkCreateQuizQuestions
 );
+router.post(
+  "/shuffle-existing-quiz-options",
+  QuizQuestionsController.shuffleExistingQuizOptions
+);
 
 module.exports = router;
